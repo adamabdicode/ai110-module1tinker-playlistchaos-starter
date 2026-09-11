@@ -263,21 +263,26 @@ def playlist_tabs(playlists):
     if include_mixed:
         tab_labels.append("Mixed")
 
+    # One search box above the tabs so the query stays when switching playlists.
+    query = st.text_input(
+        "Search playlists by artist or song",
+        key="playlist_search",
+    )
+
     tabs = st.tabs(tab_labels)
 
     for label, tab in zip(tab_labels, tabs):
         with tab:
-            render_playlist(label, playlists.get(label, []))
+            render_playlist(label, playlists.get(label, []), query)
 
 
-def render_playlist(label, songs):
+def render_playlist(label, songs, query):
     st.subheader(f"{label} playlist")
     if not songs:
         st.write("No songs in this playlist.")
         return
 
-    query = st.text_input(f"Search {label} playlist by artist", key=f"search_{label}")
-    filtered = search_songs(songs, query, field="artist")
+    filtered = search_songs(songs, query)
 
     if not filtered:
         st.write("No matching songs.")
